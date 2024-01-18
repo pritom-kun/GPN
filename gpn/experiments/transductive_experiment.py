@@ -27,16 +27,18 @@ class TransductiveExperiment:
             data_cfg: DataConfiguration,
             model_cfg: ModelConfiguration,
             train_cfg: TrainingConfiguration,
-            ex: Optional[Experiment] = None):
+            exp_no: int,
+            ex: Optional[Experiment] = None
+        ):
 
         self.run_cfg = run_cfg
         self.model_cfg = model_cfg
         self.data_cfg = data_cfg
         self.train_cfg = train_cfg
-
         self.model = None
         self.dataset = None
         self.ex = ex
+        self.exp_no = exp_no
 
         # metrics for evaluation of default graph
         # and id+ood splits combined for ood
@@ -228,6 +230,7 @@ class TransductiveExperiment:
                 eval_every=1, eval_train=True,
                 callbacks=warmup_callbacks,
                 metrics=metrics,
+                exp_no=self.exp_no,
                 gpu=self.run_cfg.gpu)
 
             self.engine.model.set_warming_up(False)

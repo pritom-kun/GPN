@@ -132,6 +132,7 @@ def DatasetManager(
         data = D.CitationFull(root, 'CiteSeer', default_transform, None)
 
     elif dataset == 'Cora':
+        assert split == 'public'
         data = D.Planetoid(
             root, 'Cora',
             pre_transform=None,
@@ -141,6 +142,7 @@ def DatasetManager(
             num_test=test_size, num_val=val_size)
 
     elif dataset == 'PubMed':
+        assert split == 'public'
         # PubMed contains non-binary node features
         # here, only binary bag-of-word features are used
         transform = T.Compose([
@@ -158,6 +160,7 @@ def DatasetManager(
             num_test=test_size, num_val=val_size)
 
     elif dataset == 'CiteSeer':
+        assert split == 'public'
         data = D.Planetoid(
             root, 'CiteSeer',
             pre_transform=None,

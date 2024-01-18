@@ -1,9 +1,14 @@
-from typing import Dict, Any
-import copy
+import os
+from contextlib import redirect_stdout
+from typing import Any, Dict
+
 import numpy as np
 from sacred import Experiment
-from gpn.utils import RunConfiguration, DataConfiguration
-from gpn.utils import ModelConfiguration, TrainingConfiguration
+from tqdm import tqdm
+
+from gpn.utils import (DataConfiguration, ModelConfiguration, RunConfiguration,
+                       TrainingConfiguration)
+
 from .transductive_experiment import TransductiveExperiment
 
 
@@ -23,8 +28,19 @@ class MultipleRunExperiment:
         self.model_cfg = model_cfg
         self.train_cfg = training_cfg
         self.ex = ex
+        self.ensemble_groups = None
 
-        if self.run_cfg.eval_mode == 'ensemble' or self.model_cfg.model_name in ('GDK', 'DiffusionRho', 'MaternGGP', 'GGP'):
+        if run_cfg.eval_mode == "ensemble":
+            if data_cfg.split == "random":
+                self.init_nos = [1]
+                self.model_cfg.set_values(ensemble_max_init_no=10)
+            else:
+                self.init_nos = [self.model_cfg.init_no] if self.run_cfg.num_inits is None else \
+                    range(1, self.run_cfg.num_inits + 1)
+                self.ensemble_groups = model_cfg.ensemble_max_init_no//run_cfg.num_inits
+                self.model_cfg.set_values(ensemble_max_init_no=0)
+
+        elif self.model_cfg.model_name in ('GDK', 'DiffusionRho', 'MaternGGP', 'GGP'):
             self.init_nos = [1]
 
         else:
@@ -42,12 +58,18 @@ class MultipleRunExperiment:
         run_results = []
 
         for split_no in self.split_nos:
-            for init_no in self.init_nos:
+            for init_no in tqdm(self.init_nos):
+                # with redirect_stdout(open(os.devnull, 'w')):
                 self.data_cfg.set_values(split_no=split_no)
                 self.model_cfg.set_values(init_no=init_no)
 
+                if self.run_cfg.eval_mode == "ensemble" and self.data_cfg.split == "public":
+                    min_init = self.model_cfg.ensemble_max_init_no + 1
+                    max_init = self.model_cfg.ensemble_max_init_no + self.ensemble_groups
+                    self.model_cfg.set_values(ensemble_min_init_no=min_init, ensemble_max_init_no=max_init)
+
                 if self.run_cfg.ex_type == 'transductive':
-                    results = self.run_transductive_experiment()
+                    results = self.run_transductive_experiment(exp_no=init_no)
 
                 else:
                     raise ValueError
@@ -57,6 +79,7 @@ class MultipleRunExperiment:
         result_keys = run_results[0].keys()
         result_values = {k: [v[k] for v in run_results] for k in result_keys}
         result_means = {k: float(np.array(v).mean()) for k, v in result_values.items()}
+        result_std = {k: float(np.array(v).std()) for k, v in result_values.items()}
 
         return_results = None
         # if only one configuration: behave as default experiment
@@ -66,15 +89,18 @@ class MultipleRunExperiment:
         else:
             return_results = {
                 **{f'{k}': v for k, v in result_means.items()},
+                **{f'{k}_std': v for k, v in result_std.items()},
                 **{f'{k}_val': v for k, v in result_values.items()}
             }
 
         return return_results
 
-    def run_transductive_experiment(self) -> Dict[str, Any]:
+    def run_transductive_experiment(self, exp_no: int) -> Dict[str, Any]:
         experiment = TransductiveExperiment(
             self.run_cfg.clone(), self.data_cfg.clone(),
-            self.model_cfg.clone(), self.train_cfg.clone(), ex=self.ex)
+            self.model_cfg.clone(), self.train_cfg.clone(),
+            exp_no, ex=self.ex
+            )
         results = experiment.run()
 
         return results

@@ -5,6 +5,7 @@ run:
   save_model: true
   gpu: 0
   experiment_name: ood_loc
+  num_inits: 10
 data:
   split_no: 1
   dataset: CoraML
@@ -26,7 +27,7 @@ model:
   dropout_prob: 0.8
   dropout_prob_adj: 0.0
   ensemble_min_init_no: 1
-  ensemble_max_init_no: 10
+  ensemble_max_init_no: 100
 training:
   epochs: 100000
   stopping_mode: default

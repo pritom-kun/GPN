@@ -102,6 +102,9 @@ def confidence(y_hat: Prediction, y: Tensor, score_type: str = 'AUROC', uncertai
         if len(scores) == 0:
             return torch.as_tensor(float('nan'))
 
+        scores = -scores
+        corrects = (~corrects.astype(bool)).astype(int)
+
         return _area_under_the_curve(score_type, corrects, scores)
 
     return torch.as_tensor(float('nan'))
