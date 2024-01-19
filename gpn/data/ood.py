@@ -1,13 +1,10 @@
 from typing import Optional
 import math
-import os
-import random
 import torch
 import numpy as np
 from torch_geometric.data import Data
 from collections import Counter
 import torch_geometric.utils as tu
-from gpn.utils import map_tensor
 
 
 def swap_features(data: Data, i: int, j: int):
