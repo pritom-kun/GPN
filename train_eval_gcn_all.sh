@@ -8,8 +8,8 @@ train_eval=$2
 datasets=("Cora" "CiteSeer" "PubMed" "AmazonPhotos" "AmazonComputers" "CoauthorCS" "CoauthorPhysics")
 splits=("public" "public" "public" "random" "random" "random" "random")
 
-ood_left_out_classes=("[4,5,6]" "[4,5]" "[2]" "[5,6,7]" "[5,6,7,8,9]" "[11,12,13,14]" "[3,4]")
-# ood_left_out_classes=("[0,1,2]" "[0,1]" "[0]" "[0,1,2]" "[0,1,2,3,4]" "[0,1,2,3]" "[0,1]")
+# ood_left_out_classes=("[4,5,6]" "[4,5]" "[2]" "[5,6,7]" "[5,6,7,8,9]" "[11,12,13,14]" "[3,4]")
+ood_left_out_classes=("[0,1,2]" "[0,1]" "[0]" "[0,1,2]" "[0,1,2,3,4]" "[0,1,2,3]" "[0,1]")
 # ood_left_out_classes=("[0,2,4]" "[1,2]" "[1]" "[3,4,5]" "[2,3,4,5,7]" "[1,2,9,12]" "[2,3]")
 # ood_left_out_classes=("[1,3,5]" "[3,4]" "[2]" "[1,4,6]" "[1,2,3,6,7]" "[3,6,10,13]" "[0,4]")
 # ood_left_out_classes=("[3,4,5]" "[0,5]" "[2]" "[2,3,7]" "[2,4,5,8,9]" "[2,3,6,10]" "[1,2]")
