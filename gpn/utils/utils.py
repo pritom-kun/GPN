@@ -152,9 +152,10 @@ def apply_mask(data: Data, y_hat: Union[dict, Tensor, Prediction], split: str,
     _y_hat = _apply_mask(y_hat, mask)
 
     if return_target:
-        masked_labels = torch.index_select(data.y, 0, mask.nonzero().flatten())
-        assert torch.all(masked_labels >= 0)
-        return _y_hat, masked_labels
+        return _y_hat, data.y[mask]
+        # masked_labels = torch.index_select(data.y, 0, mask.nonzero().flatten())
+        # assert torch.all(masked_labels >= 0)
+        # return _y_hat, masked_labels
     return _y_hat
 
 

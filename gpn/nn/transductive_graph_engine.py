@@ -344,17 +344,23 @@ class TransductiveGraphEngine(Engine):
         else:
             vecs[y.size()] = y
             return y
-    
+
     def _aggregate_metrics(self, evals, metrics):
         metric_results = {}
         for s in self.splits:
             y_hat, y = evals[s]
+
+            metric_results[s] = {
+                metric_key: self._process_metric(metric(y_hat, y))
+                for metric_key, metric in metrics.items()
+            }
             # print(s)
-            y = self._aggregate_y(y, self.vecs)
-            tmp_dict = {}
-            for metric_key, metric in metrics.items():
-                tmp_dict[metric_key] = self._process_metric(metric(y_hat, y))
-            metric_results[s] = tmp_dict
+
+            # y = self._aggregate_y(y, self.vecs)
+            # tmp_dict = {}
+            # for metric_key, metric in metrics.items():
+            #     tmp_dict[metric_key] = self._process_metric(metric(y_hat, y))
+            # metric_results[s] = tmp_dict
 
         return metric_results
 
@@ -363,8 +369,8 @@ class TransductiveGraphEngine(Engine):
         for s in self.splits:
             y_hat, y = evals[s]
             y_hat_ood, y_ood = evals_ood[s]
-            y = self._aggregate_y(y, self.vecs2)
-            y_ood = self._aggregate_y(y_ood, self.vecs_ood)
+            # y = self._aggregate_y(y, self.vecs2)
+            # y_ood = self._aggregate_y(y_ood, self.vecs_ood)
 
             metric_results[s] = {
                 metric_key: self._process_metric(metric(y_hat, y, y_hat_ood, y_ood))
