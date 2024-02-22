@@ -124,7 +124,7 @@ def run_experiment(run: dict, data: dict, model: dict, training: dict):
     save_dir = os.path.join(run_cfg.experiment_directory, run_cfg.experiment_name, f"{data_cfg.dataset}_results.csv")
 
     # df.to_csv(save_dir)
-    print(df.to_markdown())
+    # print(df.to_markdown())
 
     brief_df = brief_results(results, data_cfg.ood_flag, run_cfg.eval_mode, model_cfg.model_name)
     brief_df.to_csv(save_dir)
