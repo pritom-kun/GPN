@@ -17,5 +17,7 @@ saved_experiments/**
 
 data/**
 !data/README.md
+wandb/**
+results/**
 
 gpn.egg-info
